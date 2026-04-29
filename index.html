@@ -1,0 +1,1167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dutch Verb Trainer — Werkwoorden</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #F5F3EE;
+  --surface: #FFFFFF;
+  --surface2: #F0EDE6;
+  --border: #E2DDD5;
+  --border2: #C8C2B8;
+  --text: #1A1714;
+  --text2: #5C574F;
+  --text3: #9C9589;
+  --accent: #2B5FE8;
+  --accent-bg: #EEF2FD;
+  --accent-text: #1A3D9A;
+  --green: #1A7A55;
+  --green-bg: #E6F5EE;
+  --red: #C0392B;
+  --red-bg: #FDF0EE;
+  --amber: #8B5E00;
+  --amber-bg: #FFF4DC;
+  --radius: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 22px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Sora', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  padding: 0;
+}
+
+.app {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 24px 16px 48px;
+}
+
+/* ── HEADER ── */
+.site-header {
+  text-align: center;
+  margin-bottom: 28px;
+  padding-top: 8px;
+}
+.site-title {
+  font-size: 13px;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  color: var(--text3);
+  text-transform: uppercase;
+}
+.site-title span {
+  color: var(--accent);
+  font-family: 'DM Mono', monospace;
+}
+
+/* ── SCREENS ── */
+.screen { display: none; }
+.screen.active { display: block; }
+
+/* ── CARD ── */
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-xl);
+  padding: 20px;
+  margin-bottom: 14px;
+}
+
+.card-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 14px;
+}
+
+/* ── TYPE PILLS ── */
+.type-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.pill {
+  padding: 8px 16px;
+  border: 1.5px solid var(--border2);
+  border-radius: 40px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text2);
+  background: transparent;
+  transition: all 0.15s;
+  font-family: 'Sora', sans-serif;
+}
+.pill:hover { border-color: var(--accent); color: var(--accent); }
+.pill.active {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: #fff;
+}
+
+/* ── VERB SELECTION ── */
+.select-actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+.select-actions button {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--accent);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'Sora', sans-serif;
+  padding: 2px 0;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.verb-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 6px;
+  max-height: 220px;
+  overflow-y: auto;
+  padding-right: 4px;
+}
+.verb-chip {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  padding: 7px 10px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text2);
+  background: var(--surface2);
+  transition: all 0.12s;
+  user-select: none;
+}
+.verb-chip:hover { border-color: var(--accent); }
+.verb-chip.selected {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  color: var(--accent-text);
+  font-weight: 500;
+}
+.verb-chip .chk {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  border: 1.5px solid var(--border2);
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.12s;
+}
+.verb-chip.selected .chk {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+.verb-chip.selected .chk::after {
+  content: '';
+  display: block;
+  width: 8px;
+  height: 5px;
+  border-left: 1.5px solid #fff;
+  border-bottom: 1.5px solid #fff;
+  transform: rotate(-45deg) translate(1px, -1px);
+}
+
+/* ── MODE BUTTONS ── */
+.mode-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.mode-btn {
+  flex: 1;
+  min-width: 100px;
+  padding: 9px 12px;
+  border: 1.5px solid var(--border2);
+  border-radius: var(--radius);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  color: var(--text2);
+  background: var(--surface2);
+  transition: all 0.13s;
+  text-align: center;
+  font-family: 'Sora', sans-serif;
+}
+.mode-btn:hover { border-color: var(--accent); color: var(--accent); }
+.mode-btn.active {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+  color: var(--accent-text);
+}
+
+/* ── START BUTTON ── */
+.start-btn {
+  width: 100%;
+  padding: 16px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-xl);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Sora', sans-serif;
+  transition: opacity 0.15s, transform 0.1s;
+  margin-top: 4px;
+}
+.start-btn:hover { opacity: 0.88; }
+.start-btn:active { transform: scale(0.98); }
+.start-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+
+/* ── QUIZ SCREEN ── */
+.quiz-topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 14px;
+}
+.q-counter {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text3);
+  font-family: 'DM Mono', monospace;
+}
+.quit-btn {
+  padding: 6px 14px;
+  border: 1.5px solid var(--border2);
+  border-radius: 40px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text2);
+  font-family: 'Sora', sans-serif;
+  transition: all 0.13s;
+}
+.quit-btn:hover { border-color: var(--red); color: var(--red); }
+
+.progress-wrap {
+  background: var(--surface2);
+  border-radius: 4px;
+  height: 5px;
+  margin-bottom: 20px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+.progress-fill {
+  height: 100%;
+  background: var(--accent);
+  border-radius: 4px;
+  transition: width 0.35s cubic-bezier(0.4,0,0.2,1);
+}
+
+.tense-badge {
+  display: inline-block;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  background: var(--accent-bg);
+  color: var(--accent-text);
+  margin-bottom: 16px;
+  border: 1px solid rgba(43,95,232,0.15);
+}
+
+/* ── LANGUAGE SWITCHER ── */
+.lang-switcher {
+  display: flex;
+  gap: 4px;
+  justify-content: flex-end;
+  margin-bottom: 12px;
+}
+.lang-btn {
+  padding: 4px 10px;
+  border: 1.5px solid var(--border2);
+  border-radius: 20px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text3);
+  font-family: 'Sora', sans-serif;
+  transition: all 0.13s;
+}
+.lang-btn.active {
+  background: var(--text);
+  border-color: var(--text);
+  color: var(--bg);
+}
+
+/* ── BIG VERB + PRONOUN TAG ── */
+.quiz-center {
+  text-align: center;
+  padding: 12px 0 20px;
+}
+.verb-big {
+  font-size: 42px;
+  font-weight: 600;
+  color: var(--text);
+  line-height: 1.1;
+  margin-bottom: 14px;
+  font-family: 'Sora', sans-serif;
+  letter-spacing: -0.01em;
+}
+.verb-big.perfect-mode {
+  font-size: 30px;
+}
+.pronoun-tag-wrap {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-bottom: 4px;
+}
+.pronoun-label-small {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text3);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+.pronoun-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 8px;
+  padding: 4px 14px;
+  font-size: 17px;
+  font-weight: 600;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.02em;
+}
+
+/* ── ANSWER INPUT ── */
+.answer-wrap { margin-top: 20px; }
+.answer-input {
+  width: 100%;
+  padding: 14px 18px;
+  font-size: 20px;
+  font-family: 'DM Mono', monospace;
+  font-weight: 500;
+  border: 2px solid var(--border2);
+  border-radius: var(--radius-lg);
+  background: var(--surface);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  text-align: center;
+}
+.answer-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px rgba(43,95,232,0.1);
+}
+.answer-input.correct-ans {
+  border-color: var(--green);
+  background: var(--green-bg);
+  color: var(--green);
+  box-shadow: 0 0 0 4px rgba(26,122,85,0.1);
+}
+.answer-input.wrong-ans {
+  border-color: var(--red);
+  background: var(--red-bg);
+  color: var(--red);
+  box-shadow: 0 0 0 4px rgba(192,57,43,0.1);
+}
+
+/* ── FEEDBACK ── */
+.feedback {
+  margin-top: 12px;
+  padding: 12px 16px;
+  border-radius: var(--radius);
+  font-size: 14px;
+  font-weight: 500;
+  display: none;
+  align-items: center;
+  gap: 8px;
+}
+.feedback.show-correct {
+  display: flex;
+  background: var(--green-bg);
+  color: var(--green);
+  border: 1px solid rgba(26,122,85,0.2);
+}
+.feedback.show-wrong {
+  display: flex;
+  background: var(--red-bg);
+  color: var(--red);
+  border: 1px solid rgba(192,57,43,0.2);
+}
+.feedback .correct-word {
+  font-family: 'DM Mono', monospace;
+  font-size: 15px;
+}
+
+/* ── QUIZ BUTTONS ── */
+.btn-row {
+  display: flex;
+  gap: 10px;
+  margin-top: 16px;
+}
+.btn-skip {
+  flex: 0 0 auto;
+  padding: 13px 20px;
+  border: 1.5px solid var(--border2);
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text2);
+  font-family: 'Sora', sans-serif;
+  transition: all 0.13s;
+}
+.btn-skip:hover { border-color: var(--text); color: var(--text); }
+.btn-check {
+  flex: 1;
+  padding: 13px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Sora', sans-serif;
+  transition: opacity 0.15s, transform 0.1s;
+}
+.btn-check:hover { opacity: 0.88; }
+.btn-check:active { transform: scale(0.98); }
+.btn-check.next-mode {
+  background: var(--green);
+}
+
+/* ── RESULTS ── */
+.score-ring-wrap {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0 20px;
+}
+.score-ring {
+  width: 110px;
+  height: 110px;
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  border: 3px solid var(--border);
+  background: var(--surface);
+}
+.score-ring.great { border-color: var(--green); background: var(--green-bg); }
+.score-ring.ok { border-color: var(--amber); background: var(--amber-bg); }
+.score-ring.poor { border-color: var(--red); background: var(--red-bg); }
+.score-num {
+  font-size: 32px;
+  font-weight: 600;
+  line-height: 1;
+  font-family: 'DM Mono', monospace;
+}
+.score-ring.great .score-num { color: var(--green); }
+.score-ring.ok .score-num { color: var(--amber); }
+.score-ring.poor .score-num { color: var(--red); }
+.score-label { font-size: 11px; font-weight: 500; color: var(--text3); margin-top: 2px; }
+
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.stat-box {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  padding: 14px 10px;
+  text-align: center;
+}
+.stat-num-big {
+  font-size: 26px;
+  font-weight: 600;
+  font-family: 'DM Mono', monospace;
+  line-height: 1;
+}
+.stat-num-big.c-green { color: var(--green); }
+.stat-num-big.c-red { color: var(--red); }
+.stat-lbl { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+.best-score-badge {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text3);
+  margin-bottom: 16px;
+  padding: 8px 12px;
+  background: var(--surface2);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+}
+.best-score-badge .hl { color: var(--accent); font-family: 'DM Mono', monospace; font-size: 14px; }
+
+.mistakes-title {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text3);
+  margin-bottom: 10px;
+}
+.mistakes-list { max-height: 200px; overflow-y: auto; }
+.mistake-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+  font-size: 13px;
+  gap: 8px;
+}
+.mistake-row:last-child { border-bottom: none; }
+.m-left { display: flex; align-items: center; gap: 8px; flex-shrink: 0; }
+.m-verb { font-weight: 600; color: var(--text); }
+.m-ctx { font-size: 11px; color: var(--text3); background: var(--surface2); padding: 2px 6px; border-radius: 4px; border: 1px solid var(--border); }
+.m-right-side { display: flex; align-items: center; gap: 6px; flex-shrink: 0; }
+.m-wrong-ans { color: var(--red); font-family: 'DM Mono', monospace; font-size: 12px; text-decoration: line-through; }
+.m-arrow { color: var(--text3); font-size: 11px; }
+.m-correct-ans { color: var(--green); font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; }
+
+.res-btn-row { display: flex; gap: 10px; margin-top: 14px; }
+.btn-outline {
+  flex: 1;
+  padding: 13px;
+  border: 1.5px solid var(--border2);
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  background: transparent;
+  color: var(--text);
+  font-family: 'Sora', sans-serif;
+  transition: all 0.13s;
+}
+.btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+.btn-solid {
+  flex: 1;
+  padding: 13px;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: var(--radius-lg);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  font-family: 'Sora', sans-serif;
+  transition: opacity 0.15s;
+}
+.btn-solid:hover { opacity: 0.88; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 10px; }
+
+/* ── MOBILE ── */
+@media (max-width: 480px) {
+  .app { padding: 16px 12px 60px; }
+  .verb-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); max-height: 180px; }
+  .verb-big { font-size: 32px; }
+  .verb-big.perfect-mode { font-size: 24px; }
+  .pronoun-tag { font-size: 15px; padding: 3px 12px; }
+  .answer-input { font-size: 18px; padding: 12px 14px; }
+  .stats-grid { gap: 8px; }
+  .stat-num-big { font-size: 22px; }
+  .mode-btn { min-width: 80px; font-size: 12px; padding: 8px 8px; }
+  .score-ring { width: 96px; height: 96px; }
+  .score-num { font-size: 28px; }
+  .btn-check, .btn-outline, .btn-solid { font-size: 14px; }
+}
+</style>
+</head>
+<body>
+<div class="app">
+  <header class="site-header">
+    <div class="lang-switcher">
+      <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
+      <button class="lang-btn" onclick="setLang('nl',this)">NL</button>
+    </div>
+    <div class="site-title">Dutch Verb Trainer</div>
+  </header>
+
+  <!-- ══ SETUP SCREEN ══ -->
+  <div id="screen-setup" class="screen active">
+
+    <div class="card">
+      <div class="card-title" data-i18n="verbType">Verb type</div>
+      <div class="type-pills">
+        <button class="pill active" onclick="setType('all')" data-i18n="allVerbs">All verbs</button>
+        <button class="pill" onclick="setType('irregular')" data-i18n="irregularOnly">Irregular only</button>
+        <button class="pill" onclick="setType('regular')" data-i18n="regularOnly">Regular only</button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" data-i18n="selectVerbs">Select verbs</div>
+      <div class="select-actions">
+        <button onclick="selectAll()" data-i18n="selectAll">Select all</button>
+        <button onclick="selectNone()" data-i18n="clearAll">Clear all</button>
+      </div>
+      <div class="verb-grid" id="verb-grid"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title" style="margin-bottom:10px" data-i18n="tense">Tense</div>
+      <div class="mode-row" id="tense-row">
+        <button class="mode-btn active" onclick="setTense('present',this)" data-i18n="present">Present</button>
+        <button class="mode-btn" onclick="setTense('past',this)" data-i18n="past">Past</button>
+        <button class="mode-btn" onclick="setTense('perfect',this)" data-i18n="participle">Participle</button>
+        <button class="mode-btn" onclick="setTense('all',this)" data-i18n="all">All</button>
+      </div>
+      <div class="card-title" style="margin-top:16px;margin-bottom:10px" data-i18n="questionOrder">Question order</div>
+      <div class="mode-row" id="order-row">
+        <button class="mode-btn active" onclick="setOrder('random',this)" data-i18n="random">Random</button>
+        <button class="mode-btn" onclick="setOrder('norep',this)" data-i18n="noRepeat">No repeat</button>
+        <button class="mode-btn" onclick="setOrder('fixed',this)" data-i18n="fixed">Fixed</button>
+      </div>
+    </div>
+
+    <button class="start-btn" id="start-btn" onclick="startQuiz()" disabled data-i18n="selectToStart">Select verbs to start</button>
+  </div>
+
+  <!-- ══ QUIZ SCREEN ══ -->
+  <div id="screen-quiz" class="screen">
+    <div class="quiz-topbar">
+      <span class="q-counter" id="q-counter">1 / 10</span>
+      <button class="quit-btn" onclick="goSetup()" data-i18n="quit">✕ Quit</button>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+
+    <div class="card" style="text-align:center">
+      <div style="display:flex;justify-content:center;margin-bottom:14px">
+        <span class="tense-badge" id="tense-badge">Present simple</span>
+      </div>
+
+      <div class="quiz-center" id="quiz-center">
+        <div class="pronoun-tag-wrap" id="pronoun-tag-wrap">
+          <span class="pronoun-label-small" id="pronoun-label-small">voor</span>
+          <span class="pronoun-tag" id="pronoun-tag">ik</span>
+        </div>
+        <div class="verb-big" id="q-verb">—</div>
+      </div>
+
+      <div class="answer-wrap">
+        <input
+          class="answer-input"
+          id="answer-input"
+          type="text"
+          placeholder="type answer…"
+          autocomplete="off"
+          autocorrect="off"
+          autocapitalize="off"
+          spellcheck="false"
+        >
+        <div class="feedback" id="feedback"></div>
+      </div>
+
+      <div class="btn-row">
+        <button class="btn-skip" id="skip-btn" onclick="skipQ()" data-i18n="skip">Skip</button>
+        <button class="btn-check" id="check-btn" onclick="checkOrNext()" data-i18n="check">Check</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ RESULTS SCREEN ══ -->
+  <div id="screen-results" class="screen">
+    <div class="card">
+      <div class="score-ring-wrap">
+        <div class="score-ring" id="score-ring">
+          <div class="score-num" id="score-num">—</div>
+          <div class="score-label" data-i18n="score">score</div>
+        </div>
+      </div>
+
+      <div class="stats-grid">
+        <div class="stat-box">
+          <div class="stat-num-big c-green" id="res-correct">—</div>
+          <div class="stat-lbl" data-i18n="correct">Correct</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num-big c-red" id="res-wrong">—</div>
+          <div class="stat-lbl" data-i18n="wrong">Wrong</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-num-big" id="res-total">—</div>
+          <div class="stat-lbl" data-i18n="total">Total</div>
+        </div>
+      </div>
+
+      <div class="best-score-badge" id="best-badge"></div>
+    </div>
+
+    <div class="card" id="mistakes-card" style="display:none">
+      <div class="mistakes-title" data-i18n="mistakesTitle">Mistakes to review</div>
+      <div class="mistakes-list" id="mistakes-list"></div>
+    </div>
+
+    <div class="res-btn-row">
+      <button class="btn-outline" onclick="goSetup()" data-i18n="settings">Settings</button>
+      <button class="btn-solid" onclick="startQuiz()" data-i18n="tryAgain">Try again</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const IRREGULAR = {
+  "Beginnen":{"present":{"ik":"begin","jij":"begint","hij":"begint","wij":"beginnen","jullie":"beginnen","zij":"beginnen"},"past":{"ik":"begon","jij":"begon","hij":"begon","wij":"begonnen","jullie":"begonnen","zij":"begonnen"},"perfect":"begonnen"},
+  "Bewegen":{"present":{"ik":"beweeg","jij":"beweegt","hij":"beweegt","wij":"bewegen","jullie":"bewegen","zij":"bewegen"},"past":{"ik":"bewoog","jij":"bewoog","hij":"bewoog","wij":"bewogen","jullie":"bewogen","zij":"bewogen"},"perfect":"bewogen"},
+  "Blijven":{"present":{"ik":"blijf","jij":"blijft","hij":"blijft","wij":"blijven","jullie":"blijven","zij":"blijven"},"past":{"ik":"bleef","jij":"bleef","hij":"bleef","wij":"bleven","jullie":"bleven","zij":"bleven"},"perfect":"gebleven"},
+  "Breken":{"present":{"ik":"breek","jij":"breekt","hij":"breekt","wij":"breken","jullie":"breken","zij":"breken"},"past":{"ik":"brak","jij":"brak","hij":"brak","wij":"braken","jullie":"braken","zij":"braken"},"perfect":"gebroken"},
+  "Brengen":{"present":{"ik":"breng","jij":"brengt","hij":"brengt","wij":"brengen","jullie":"brengen","zij":"brengen"},"past":{"ik":"bracht","jij":"bracht","hij":"bracht","wij":"brachten","jullie":"brachten","zij":"brachten"},"perfect":"gebracht"},
+  "Denken":{"present":{"ik":"denk","jij":"denkt","hij":"denkt","wij":"denken","jullie":"denken","zij":"denken"},"past":{"ik":"dacht","jij":"dacht","hij":"dacht","wij":"dachten","jullie":"dachten","zij":"dachten"},"perfect":"gedacht"},
+  "Doen":{"present":{"ik":"doe","jij":"doet","hij":"doet","wij":"doen","jullie":"doen","zij":"doen"},"past":{"ik":"deed","jij":"deed","hij":"deed","wij":"deden","jullie":"deden","zij":"deden"},"perfect":"gedaan"},
+  "Dragen":{"present":{"ik":"draag","jij":"draagt","hij":"draagt","wij":"dragen","jullie":"dragen","zij":"dragen"},"past":{"ik":"droeg","jij":"droeg","hij":"droeg","wij":"droegen","jullie":"droegen","zij":"droegen"},"perfect":"gedragen"},
+  "Drinken":{"present":{"ik":"drink","jij":"drinkt","hij":"drinkt","wij":"drinken","jullie":"drinken","zij":"drinken"},"past":{"ik":"dronk","jij":"dronk","hij":"dronk","wij":"dronken","jullie":"dronken","zij":"dronken"},"perfect":"gedronken"},
+  "Eten":{"present":{"ik":"eet","jij":"eet","hij":"eet","wij":"eten","jullie":"eten","zij":"eten"},"past":{"ik":"at","jij":"at","hij":"at","wij":"aten","jullie":"aten","zij":"aten"},"perfect":"gegeten"},
+  "Gaan":{"present":{"ik":"ga","jij":"gaat","hij":"gaat","wij":"gaan","jullie":"gaan","zij":"gaan"},"past":{"ik":"ging","jij":"ging","hij":"ging","wij":"gingen","jullie":"gingen","zij":"gingen"},"perfect":"gegaan"},
+  "Geven":{"present":{"ik":"geef","jij":"geeft","hij":"geeft","wij":"geven","jullie":"geven","zij":"geven"},"past":{"ik":"gaf","jij":"gaf","hij":"gaf","wij":"gaven","jullie":"gaven","zij":"gaven"},"perfect":"gegeven"},
+  "Hangen":{"present":{"ik":"hang","jij":"hangt","hij":"hangt","wij":"hangen","jullie":"hangen","zij":"hangen"},"past":{"ik":"hing","jij":"hing","hij":"hing","wij":"hingen","jullie":"hingen","zij":"hingen"},"perfect":"gehangen"},
+  "Hebben":{"present":{"ik":"heb","jij":"hebt","hij":"heeft","wij":"hebben","jullie":"hebben","zij":"hebben"},"past":{"ik":"had","jij":"had","hij":"had","wij":"hadden","jullie":"hadden","zij":"hadden"},"perfect":"gehad"},
+  "Helpen":{"present":{"ik":"help","jij":"helpt","hij":"helpt","wij":"helpen","jullie":"helpen","zij":"helpen"},"past":{"ik":"hielp","jij":"hielp","hij":"hielp","wij":"hielpen","jullie":"hielpen","zij":"hielpen"},"perfect":"geholpen"},
+  "Heten":{"present":{"ik":"heet","jij":"heet","hij":"heet","wij":"heten","jullie":"heten","zij":"heten"},"past":{"ik":"heette","jij":"heette","hij":"heette","wij":"heetten","jullie":"heetten","zij":"heetten"},"perfect":"geheten"},
+  "Komen":{"present":{"ik":"kom","jij":"komt","hij":"komt","wij":"komen","jullie":"komen","zij":"komen"},"past":{"ik":"kwam","jij":"kwam","hij":"kwam","wij":"kwamen","jullie":"kwamen","zij":"kwamen"},"perfect":"gekomen"},
+  "Kunnen":{"present":{"ik":"kan","jij":"kunt","hij":"kan","wij":"kunnen","jullie":"kunnen","zij":"kunnen"},"past":{"ik":"kon","jij":"kon","hij":"kon","wij":"konden","jullie":"konden","zij":"konden"},"perfect":"gekund"},
+  "Kijken":{"present":{"ik":"kijk","jij":"kijkt","hij":"kijkt","wij":"kijken","jullie":"kijken","zij":"kijken"},"past":{"ik":"keek","jij":"keek","hij":"keek","wij":"keken","jullie":"keken","zij":"keken"},"perfect":"gekeken"},
+  "Kiezen":{"present":{"ik":"kies","jij":"kiest","hij":"kiest","wij":"kiezen","jullie":"kiezen","zij":"kiezen"},"past":{"ik":"koos","jij":"koos","hij":"koos","wij":"kozen","jullie":"kozen","zij":"kozen"},"perfect":"gekozen"},
+  "Kopen":{"present":{"ik":"koop","jij":"koopt","hij":"koopt","wij":"kopen","jullie":"kopen","zij":"kopen"},"past":{"ik":"kocht","jij":"kocht","hij":"kocht","wij":"kochten","jullie":"kochten","zij":"kochten"},"perfect":"gekocht"},
+  "Laten":{"present":{"ik":"laat","jij":"laat","hij":"laat","wij":"laten","jullie":"laten","zij":"laten"},"past":{"ik":"liet","jij":"liet","hij":"liet","wij":"lieten","jullie":"lieten","zij":"lieten"},"perfect":"gelaten"},
+  "Lezen":{"present":{"ik":"lees","jij":"leest","hij":"leest","wij":"lezen","jullie":"lezen","zij":"lezen"},"past":{"ik":"las","jij":"las","hij":"las","wij":"lazen","jullie":"lazen","zij":"lazen"},"perfect":"gelezen"},
+  "Liegen":{"present":{"ik":"lieg","jij":"liegt","hij":"liegt","wij":"liegen","jullie":"liegen","zij":"liegen"},"past":{"ik":"loog","jij":"loog","hij":"loog","wij":"logen","jullie":"logen","zij":"logen"},"perfect":"gelogen"},
+  "Liggen":{"present":{"ik":"lig","jij":"ligt","hij":"ligt","wij":"liggen","jullie":"liggen","zij":"liggen"},"past":{"ik":"lag","jij":"lag","hij":"lag","wij":"lagen","jullie":"lagen","zij":"lagen"},"perfect":"gelegen"},
+  "Lopen":{"present":{"ik":"loop","jij":"loopt","hij":"loopt","wij":"lopen","jullie":"lopen","zij":"lopen"},"past":{"ik":"liep","jij":"liep","hij":"liep","wij":"liepen","jullie":"liepen","zij":"liepen"},"perfect":"gelopen"},
+  "Lijden":{"present":{"ik":"lijd","jij":"lijdt","hij":"lijdt","wij":"lijden","jullie":"lijden","zij":"lijden"},"past":{"ik":"leed","jij":"leed","hij":"leed","wij":"leden","jullie":"leden","zij":"leden"},"perfect":"geleden"},
+  "Lijken":{"present":{"ik":"lijk","jij":"lijkt","hij":"lijkt","wij":"lijken","jullie":"lijken","zij":"lijken"},"past":{"ik":"leek","jij":"leek","hij":"leek","wij":"leken","jullie":"leken","zij":"leken"},"perfect":"geleken"},
+  "Moeten":{"present":{"ik":"moet","jij":"moet","hij":"moet","wij":"moeten","jullie":"moeten","zij":"moeten"},"past":{"ik":"moest","jij":"moest","hij":"moest","wij":"moesten","jullie":"moesten","zij":"moesten"},"perfect":"gemoeten"},
+  "Mogen":{"present":{"ik":"mag","jij":"mag","hij":"mag","wij":"mogen","jullie":"mogen","zij":"mogen"},"past":{"ik":"mocht","jij":"mocht","hij":"mocht","wij":"mochten","jullie":"mochten","zij":"mochten"},"perfect":"gemogen"},
+  "Nemen":{"present":{"ik":"neem","jij":"neemt","hij":"neemt","wij":"nemen","jullie":"nemen","zij":"nemen"},"past":{"ik":"nam","jij":"nam","hij":"nam","wij":"namen","jullie":"namen","zij":"namen"},"perfect":"genomen"},
+  "Rijden":{"present":{"ik":"rijd","jij":"rijdt","hij":"rijdt","wij":"rijden","jullie":"rijden","zij":"rijden"},"past":{"ik":"reed","jij":"reed","hij":"reed","wij":"reden","jullie":"reden","zij":"reden"},"perfect":"gereden"},
+  "Roepen":{"present":{"ik":"roep","jij":"roept","hij":"roept","wij":"roepen","jullie":"roepen","zij":"roepen"},"past":{"ik":"riep","jij":"riep","hij":"riep","wij":"riepen","jullie":"riepen","zij":"riepen"},"perfect":"geroepen"},
+  "Schrijven":{"present":{"ik":"schrijf","jij":"schrijft","hij":"schrijft","wij":"schrijven","jullie":"schrijven","zij":"schrijven"},"past":{"ik":"schreef","jij":"schreef","hij":"schreef","wij":"schreven","jullie":"schreven","zij":"schreven"},"perfect":"geschreven"},
+  "Slaan":{"present":{"ik":"sla","jij":"slaat","hij":"slaat","wij":"slaan","jullie":"slaan","zij":"slaan"},"past":{"ik":"sloeg","jij":"sloeg","hij":"sloeg","wij":"sloegen","jullie":"sloegen","zij":"sloegen"},"perfect":"geslagen"},
+  "Slapen":{"present":{"ik":"slaap","jij":"slaapt","hij":"slaapt","wij":"slapen","jullie":"slapen","zij":"slapen"},"past":{"ik":"sliep","jij":"sliep","hij":"sliep","wij":"sliepen","jullie":"sliepen","zij":"sliepen"},"perfect":"geslapen"},
+  "Sluiten":{"present":{"ik":"sluit","jij":"sluit","hij":"sluit","wij":"sluiten","jullie":"sluiten","zij":"sluiten"},"past":{"ik":"sloot","jij":"sloot","hij":"sloot","wij":"sloten","jullie":"sloten","zij":"sloten"},"perfect":"gesloten"},
+  "Snijden":{"present":{"ik":"snijd","jij":"snijdt","hij":"snijdt","wij":"snijden","jullie":"snijden","zij":"snijden"},"past":{"ik":"sneed","jij":"sneed","hij":"sneed","wij":"sneden","jullie":"sneden","zij":"sneden"},"perfect":"gesneden"},
+  "Spreken":{"present":{"ik":"spreek","jij":"spreekt","hij":"spreekt","wij":"spreken","jullie":"spreken","zij":"spreken"},"past":{"ik":"sprak","jij":"sprak","hij":"sprak","wij":"spraken","jullie":"spraken","zij":"spraken"},"perfect":"gesproken"},
+  "Staan":{"present":{"ik":"sta","jij":"staat","hij":"staat","wij":"staan","jullie":"staan","zij":"staan"},"past":{"ik":"stond","jij":"stond","hij":"stond","wij":"stonden","jullie":"stonden","zij":"stonden"},"perfect":"gestaan"},
+  "Sterven":{"present":{"ik":"sterf","jij":"sterft","hij":"sterft","wij":"sterven","jullie":"sterven","zij":"sterven"},"past":{"ik":"stierf","jij":"stierf","hij":"stierf","wij":"stierven","jullie":"stierven","zij":"stierven"},"perfect":"gestorven"},
+  "Vallen":{"present":{"ik":"val","jij":"valt","hij":"valt","wij":"vallen","jullie":"vallen","zij":"vallen"},"past":{"ik":"viel","jij":"viel","hij":"viel","wij":"vielen","jullie":"vielen","zij":"vielen"},"perfect":"gevallen"},
+  "Vechten":{"present":{"ik":"vecht","jij":"vecht","hij":"vecht","wij":"vechten","jullie":"vechten","zij":"vechten"},"past":{"ik":"vocht","jij":"vocht","hij":"vocht","wij":"vochten","jullie":"vochten","zij":"vochten"},"perfect":"gevochten"},
+  "Vergeten":{"present":{"ik":"vergeet","jij":"vergeet","hij":"vergeet","wij":"vergeten","jullie":"vergeten","zij":"vergeten"},"past":{"ik":"vergat","jij":"vergat","hij":"vergat","wij":"vergaten","jullie":"vergaten","zij":"vergaten"},"perfect":"vergeten"},
+  "Verliezen":{"present":{"ik":"verlies","jij":"verliest","hij":"verliest","wij":"verliezen","jullie":"verliezen","zij":"verliezen"},"past":{"ik":"verloor","jij":"verloor","hij":"verloor","wij":"verloren","jullie":"verloren","zij":"verloren"},"perfect":"verloren"},
+  "Vinden":{"present":{"ik":"vind","jij":"vindt","hij":"vindt","wij":"vinden","jullie":"vinden","zij":"vinden"},"past":{"ik":"vond","jij":"vond","hij":"vond","wij":"vonden","jullie":"vonden","zij":"vonden"},"perfect":"gevonden"},
+  "Vliegen":{"present":{"ik":"vlieg","jij":"vliegt","hij":"vliegt","wij":"vliegen","jullie":"vliegen","zij":"vliegen"},"past":{"ik":"vloog","jij":"vloog","hij":"vloog","wij":"vlogen","jullie":"vlogen","zij":"vlogen"},"perfect":"gevlogen"},
+  "Vragen":{"present":{"ik":"vraag","jij":"vraagt","hij":"vraagt","wij":"vragen","jullie":"vragen","zij":"vragen"},"past":{"ik":"vroeg","jij":"vroeg","hij":"vroeg","wij":"vroegen","jullie":"vroegen","zij":"vroegen"},"perfect":"gevraagd"},
+  "Weten":{"present":{"ik":"weet","jij":"weet","hij":"weet","wij":"weten","jullie":"weten","zij":"weten"},"past":{"ik":"wist","jij":"wist","hij":"wist","wij":"wisten","jullie":"wisten","zij":"wisten"},"perfect":"geweten"},
+  "Winnen":{"present":{"ik":"win","jij":"wint","hij":"wint","wij":"winnen","jullie":"winnen","zij":"winnen"},"past":{"ik":"won","jij":"won","hij":"won","wij":"wonnen","jullie":"wonnen","zij":"wonnen"},"perfect":"gewonnen"},
+  "Worden":{"present":{"ik":"word","jij":"wordt","hij":"wordt","wij":"worden","jullie":"worden","zij":"worden"},"past":{"ik":"werd","jij":"werd","hij":"werd","wij":"werden","jullie":"werden","zij":"werden"},"perfect":"geworden"},
+  "Wijzen":{"present":{"ik":"wijs","jij":"wijst","hij":"wijst","wij":"wijzen","jullie":"wijzen","zij":"wijzen"},"past":{"ik":"wees","jij":"wees","hij":"wees","wij":"wezen","jullie":"wezen","zij":"wezen"},"perfect":"gewezen"},
+  "Zeggen":{"present":{"ik":"zeg","jij":"zegt","hij":"zegt","wij":"zeggen","jullie":"zeggen","zij":"zeggen"},"past":{"ik":"zei","jij":"zei","hij":"zei","wij":"zeiden","jullie":"zeiden","zij":"zeiden"},"perfect":"gezegd"},
+  "Zien":{"present":{"ik":"zie","jij":"ziet","hij":"ziet","wij":"zien","jullie":"zien","zij":"zien"},"past":{"ik":"zag","jij":"zag","hij":"zag","wij":"zagen","jullie":"zagen","zij":"zagen"},"perfect":"gezien"},
+  "Zingen":{"present":{"ik":"zing","jij":"zingt","hij":"zingt","wij":"zingen","jullie":"zingen","zij":"zingen"},"past":{"ik":"zong","jij":"zong","hij":"zong","wij":"zongen","jullie":"zongen","zij":"zongen"},"perfect":"gezongen"},
+  "Zijn":{"present":{"ik":"ben","jij":"bent","hij":"is","wij":"zijn","jullie":"zijn","zij":"zijn"},"past":{"ik":"was","jij":"was","hij":"was","wij":"waren","jullie":"waren","zij":"waren"},"perfect":"geweest"},
+  "Zitten":{"present":{"ik":"zit","jij":"zit","hij":"zit","wij":"zitten","jullie":"zitten","zij":"zitten"},"past":{"ik":"zat","jij":"zat","hij":"zat","wij":"zaten","jullie":"zaten","zij":"zaten"},"perfect":"gezeten"},
+  "Zoeken":{"present":{"ik":"zoek","jij":"zoekt","hij":"zoekt","wij":"zoeken","jullie":"zoeken","zij":"zoeken"},"past":{"ik":"zocht","jij":"zocht","hij":"zocht","wij":"zochten","jullie":"zochten","zij":"zochten"},"perfect":"gezocht"},
+  "Zullen":{"present":{"ik":"zal","jij":"zal","hij":"zal","wij":"zullen","jullie":"zullen","zij":"zullen"},"past":{"ik":"zou","jij":"zou","hij":"zou","wij":"zouden","jullie":"zouden","zij":"zouden"},"perfect":"gezuld"}
+};
+
+const REGULAR = {
+  "Antwoorden":{"present":{"ik":"antwoord","jij":"antwoordt","hij":"antwoordt","wij":"antwoorden","jullie":"antwoorden","zij":"antwoorden"},"past":{"ik":"antwoordde","jij":"antwoordde","hij":"antwoordde","wij":"antwoordden","jullie":"antwoordden","zij":"antwoordden"},"perfect":"geantwoord"},
+  "Beloven":{"present":{"ik":"beloof","jij":"belooft","hij":"belooft","wij":"beloven","jullie":"beloven","zij":"beloven"},"past":{"ik":"beloofde","jij":"beloofde","hij":"beloofde","wij":"beloofden","jullie":"beloofden","zij":"beloofden"},"perfect":"beloofd"},
+  "Betalen":{"present":{"ik":"betaal","jij":"betaalt","hij":"betaalt","wij":"betalen","jullie":"betalen","zij":"betalen"},"past":{"ik":"betaalde","jij":"betaalde","hij":"betaalde","wij":"betaalden","jullie":"betaalden","zij":"betaalden"},"perfect":"betaald"},
+  "Danken":{"present":{"ik":"dank","jij":"dankt","hij":"dankt","wij":"danken","jullie":"danken","zij":"danken"},"past":{"ik":"dankte","jij":"dankte","hij":"dankte","wij":"dankten","jullie":"dankten","zij":"dankten"},"perfect":"gedankt"},
+  "Kennen":{"present":{"ik":"ken","jij":"kent","hij":"kent","wij":"kennen","jullie":"kennen","zij":"kennen"},"past":{"ik":"kende","jij":"kende","hij":"kende","wij":"kenden","jullie":"kenden","zij":"kenden"},"perfect":"gekend"},
+  "Kosten":{"present":{"ik":"kost","jij":"kost","hij":"kost","wij":"kosten","jullie":"kosten","zij":"kosten"},"past":{"ik":"kostte","jij":"kostte","hij":"kostte","wij":"kostten","jullie":"kostten","zij":"kostten"},"perfect":"gekost"},
+  "Leggen":{"present":{"ik":"leg","jij":"legt","hij":"legt","wij":"leggen","jullie":"leggen","zij":"leggen"},"past":{"ik":"legde","jij":"legde","hij":"legde","wij":"legden","jullie":"legden","zij":"legden"},"perfect":"gelegd"},
+  "Leren":{"present":{"ik":"leer","jij":"leert","hij":"leert","wij":"leren","jullie":"leren","zij":"leren"},"past":{"ik":"leerde","jij":"leerde","hij":"leerde","wij":"leerden","jullie":"leerden","zij":"leerden"},"perfect":"geleerd"},
+  "Leven":{"present":{"ik":"leef","jij":"leeft","hij":"leeft","wij":"leven","jullie":"leven","zij":"leven"},"past":{"ik":"leefde","jij":"leefde","hij":"leefde","wij":"leefden","jullie":"leefden","zij":"leefden"},"perfect":"geleefd"},
+  "Lusten":{"present":{"ik":"lust","jij":"lust","hij":"lust","wij":"lusten","jullie":"lusten","zij":"lusten"},"past":{"ik":"lustte","jij":"lustte","hij":"lustte","wij":"lustten","jullie":"lustten","zij":"lustten"},"perfect":"gelust"},
+  "Ontdekken":{"present":{"ik":"ontdek","jij":"ontdekt","hij":"ontdekt","wij":"ontdekken","jullie":"ontdekken","zij":"ontdekken"},"past":{"ik":"ontdekte","jij":"ontdekte","hij":"ontdekte","wij":"ontdekten","jullie":"ontdekten","zij":"ontdekten"},"perfect":"ontdekt"},
+  "Praten":{"present":{"ik":"praat","jij":"praat","hij":"praat","wij":"praten","jullie":"praten","zij":"praten"},"past":{"ik":"praatte","jij":"praatte","hij":"praatte","wij":"praatten","jullie":"praatten","zij":"praatten"},"perfect":"gepraat"},
+  "Stemmen":{"present":{"ik":"stem","jij":"stemt","hij":"stemt","wij":"stemmen","jullie":"stemmen","zij":"stemmen"},"past":{"ik":"stemde","jij":"stemde","hij":"stemde","wij":"stemden","jullie":"stemden","zij":"stemden"},"perfect":"gestemd"},
+  "Werken":{"present":{"ik":"werk","jij":"werkt","hij":"werkt","wij":"werken","jullie":"werken","zij":"werken"},"past":{"ik":"werkte","jij":"werkte","hij":"werkte","wij":"werkten","jullie":"werkten","zij":"werkten"},"perfect":"gewerkt"},
+  "Geloven":{"present":{"ik":"geloof","jij":"gelooft","hij":"gelooft","wij":"geloven","jullie":"geloven","zij":"geloven"},"past":{"ik":"geloofde","jij":"geloofde","hij":"geloofde","wij":"geloofden","jullie":"geloofden","zij":"geloofden"},"perfect":"geloofd"}
+};
+
+let selectedVerbs = new Set();
+let verbType = 'all';
+let tenseMode = 'present';
+let orderMode = 'random';
+let questions = [];
+let qIndex = 0;
+let correctCount = 0;
+let wrongCount = 0;
+let mistakes = [];
+let answered = false;
+
+function getAllVerbs() {
+  let pool = {};
+  if (verbType === 'all' || verbType === 'irregular') Object.assign(pool, IRREGULAR);
+  if (verbType === 'all' || verbType === 'regular') Object.assign(pool, REGULAR);
+  return pool;
+}
+
+function renderVerbGrid() {
+  const grid = document.getElementById('verb-grid');
+  grid.innerHTML = '';
+  const pool = getAllVerbs();
+  Object.keys(pool).sort().forEach(v => {
+    const chip = document.createElement('div');
+    chip.className = 'verb-chip' + (selectedVerbs.has(v) ? ' selected' : '');
+    chip.dataset.verb = v;
+    chip.innerHTML = `<div class="chk"></div>${v}`;
+    chip.onclick = () => {
+      if (selectedVerbs.has(v)) { selectedVerbs.delete(v); chip.classList.remove('selected'); }
+      else { selectedVerbs.add(v); chip.classList.add('selected'); }
+      updateStartBtn();
+    };
+    grid.appendChild(chip);
+  });
+  updateStartBtn();
+}
+
+function setType(t) {
+  verbType = t;
+  document.querySelectorAll('.type-pills .pill').forEach((p, i) => {
+    p.classList.toggle('active', ['all','irregular','regular'][i] === t);
+  });
+  const prev = [...selectedVerbs];
+  selectedVerbs.clear();
+  renderVerbGrid();
+  const pool = getAllVerbs();
+  prev.forEach(v => { if (pool[v]) selectedVerbs.add(v); });
+  document.querySelectorAll('.verb-chip').forEach(c => {
+    c.classList.toggle('selected', selectedVerbs.has(c.dataset.verb));
+  });
+  updateStartBtn();
+}
+
+function selectAll() {
+  const pool = getAllVerbs();
+  Object.keys(pool).forEach(v => selectedVerbs.add(v));
+  document.querySelectorAll('.verb-chip').forEach(c => c.classList.add('selected'));
+  updateStartBtn();
+}
+
+function selectNone() {
+  selectedVerbs.clear();
+  document.querySelectorAll('.verb-chip').forEach(c => c.classList.remove('selected'));
+  updateStartBtn();
+}
+
+function setTense(m, btn) {
+  tenseMode = m;
+  document.querySelectorAll('#tense-row .mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function setOrder(o, btn) {
+  orderMode = o;
+  document.querySelectorAll('#order-row .mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+const I18N = {
+  en: {
+    verbType: 'Verb type', allVerbs: 'All verbs', irregularOnly: 'Irregular only', regularOnly: 'Regular only',
+    selectVerbs: 'Select verbs', selectAll: 'Select all', clearAll: 'Clear all',
+    tense: 'Tense', present: 'Present', past: 'Past', participle: 'Participle', all: 'All',
+    questionOrder: 'Question order', random: 'Random', noRepeat: 'No repeat', fixed: 'Fixed',
+    selectToStart: 'Select verbs to start',
+    startPractice: (n) => `Start practice (${n} verb${n>1?'s':''})`,
+    quit: '✕ Quit', skip: 'Skip', check: 'Check',
+    score: 'score', correct: 'Correct', wrong: 'Wrong', total: 'Total',
+    mistakesTitle: 'Mistakes to review', settings: 'Settings', tryAgain: 'Try again',
+    tenseBadge: { present: 'Present simple', past: 'Past simple', perfect: 'Past participle' },
+    pronounLabel: 'for', particpleLabel: 'participle of',
+    placeholderPerfect: 'past participle…',
+    placeholderPerson: (p) => `${p}…`,
+    feedbackCorrect: '✓ Correct!',
+    feedbackWrong: (ans) => `✗ The answer is <span class="correct-word">${ans}</span>`,
+    nextBtn: 'Next →', seeResults: 'See results →',
+    newBest: (prev) => prev > 0 ? `🎉 New best score! (was ${prev}%)` : 'First session complete!',
+    bestScore: (n) => `Best score: <span class="hl">${n}%</span>`,
+    tenseShort: { present: 'pres', past: 'past', perfect: 'part' }
+  },
+  nl: {
+    verbType: 'Werkwoordtype', allVerbs: 'Alle werkwoorden', irregularOnly: 'Alleen onregelmatig', regularOnly: 'Alleen regelmatig',
+    selectVerbs: 'Kies werkwoorden', selectAll: 'Alles selecteren', clearAll: 'Alles wissen',
+    tense: 'Tijdsvorm', present: 'Tegenwoordig', past: 'Verleden', participle: 'Voltooid', all: 'Alles',
+    questionOrder: 'Volgorde', random: 'Willekeurig', noRepeat: 'Geen herhaling', fixed: 'Vaste volgorde',
+    selectToStart: 'Kies werkwoorden om te starten',
+    startPractice: (n) => `Oefenen starten (${n} werkwoord${n>1?'en':''})`,
+    quit: '✕ Stoppen', skip: 'Overslaan', check: 'Controleren',
+    score: 'score', correct: 'Goed', wrong: 'Fout', total: 'Totaal',
+    mistakesTitle: 'Fouten om te herhalen', settings: 'Instellingen', tryAgain: 'Opnieuw',
+    tenseBadge: { present: 'Tegenwoordige tijd', past: 'Verleden tijd', perfect: 'Voltooid deelwoord' },
+    pronounLabel: 'voor', particpleLabel: 'deelwoord van',
+    placeholderPerfect: 'voltooid deelwoord…',
+    placeholderPerson: (p) => `${p}…`,
+    feedbackCorrect: '✓ Goed zo!',
+    feedbackWrong: (ans) => `✗ Het antwoord is <span class="correct-word">${ans}</span>`,
+    nextBtn: 'Volgende →', seeResults: 'Resultaten →',
+    newBest: (prev) => prev > 0 ? `🎉 Nieuw record! (was ${prev}%)` : 'Eerste sessie voltooid!',
+    bestScore: (n) => `Beste score: <span class="hl">${n}%</span>`,
+    tenseShort: { present: 'ttw', past: 'vtt', perfect: 'vd' }
+  }
+};
+
+let lang = 'en';
+
+function t(key) { return I18N[lang][key]; }
+
+function setLang(l, btn) {
+  lang = l;
+  document.querySelectorAll('.lang-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  applyTranslations();
+  updateStartBtn();
+}
+
+function applyTranslations() {
+  document.querySelectorAll('[data-i18n]').forEach(el => {
+    const key = el.dataset.i18n;
+    if (I18N[lang][key] && typeof I18N[lang][key] === 'string') {
+      el.textContent = I18N[lang][key];
+    }
+  });
+}
+
+function updateStartBtn() {
+  const btn = document.getElementById('start-btn');
+  const n = selectedVerbs.size;
+  btn.disabled = n === 0;
+  btn.textContent = n === 0 ? t('selectToStart') : t('startPractice')(n);
+}
+
+function buildQuestions() {
+  const pool = getAllVerbs();
+  const persons = ['ik','jij','hij','wij','jullie','zij'];
+  const tenses = tenseMode === 'all' ? ['present','past','perfect'] : [tenseMode];
+  let qs = [];
+  [...selectedVerbs].forEach(v => {
+    const data = pool[v];
+    tenses.forEach(t => {
+      if (t === 'perfect') {
+        qs.push({ verb: v, tense: 'perfect', person: null, answer: data.perfect });
+      } else {
+        persons.forEach(p => {
+          qs.push({ verb: v, tense: t, person: p, answer: data[t][p] });
+        });
+      }
+    });
+  });
+  if (orderMode !== 'fixed') {
+    for (let i = qs.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [qs[i], qs[j]] = [qs[j], qs[i]];
+    }
+  }
+  const limit = orderMode === 'norep' ? Math.min(qs.length, 20) : Math.min(qs.length, 40);
+  return qs.slice(0, limit);
+}
+
+function startQuiz() {
+  questions = buildQuestions();
+  qIndex = 0; correctCount = 0; wrongCount = 0; mistakes = []; answered = false;
+  showScreen('screen-quiz');
+  showQuestion();
+}
+
+function showQuestion() {
+  if (qIndex >= questions.length) { showResults(); return; }
+  answered = false;
+  const q = questions[qIndex];
+  const total = questions.length;
+  const L = I18N[lang];
+
+  document.getElementById('q-counter').textContent = `${qIndex + 1} / ${total}`;
+  document.getElementById('progress-fill').style.width = Math.round(qIndex / total * 100) + '%';
+  document.getElementById('tense-badge').textContent = L.tenseBadge[q.tense];
+
+  const verbEl = document.getElementById('q-verb');
+  const pronounWrap = document.getElementById('pronoun-tag-wrap');
+  const pronounTag = document.getElementById('pronoun-tag');
+  const pronounLabel = document.getElementById('pronoun-label-small');
+
+  if (q.tense === 'perfect') {
+    verbEl.textContent = q.verb;
+    verbEl.className = 'verb-big perfect-mode';
+    pronounTag.textContent = L.particpleLabel;
+    pronounLabel.textContent = '';
+    pronounWrap.style.display = 'none';
+  } else {
+    verbEl.textContent = q.verb;
+    verbEl.className = 'verb-big';
+    pronounLabel.textContent = L.pronounLabel;
+    pronounTag.textContent = q.person;
+    pronounWrap.style.display = 'flex';
+  }
+
+  const inp = document.getElementById('answer-input');
+  inp.value = ''; inp.className = 'answer-input'; inp.disabled = false;
+  inp.placeholder = q.tense === 'perfect' ? L.placeholderPerfect : L.placeholderPerson(q.person);
+  setTimeout(() => inp.focus(), 50);
+
+  document.getElementById('feedback').className = 'feedback';
+  document.getElementById('feedback').innerHTML = '';
+  document.getElementById('check-btn').textContent = L.check;
+  document.getElementById('check-btn').classList.remove('next-mode');
+  document.getElementById('skip-btn').textContent = L.skip;
+  document.getElementById('skip-btn').disabled = false;
+}
+
+function checkOrNext() {
+  if (answered) { qIndex++; showQuestion(); return; }
+  const q = questions[qIndex];
+  const inp = document.getElementById('answer-input');
+  const val = inp.value.trim().toLowerCase();
+  if (!val) return;
+  const L = I18N[lang];
+
+  answered = true;
+  inp.disabled = true;
+  const correct_ans = q.answer.toLowerCase();
+  const fb = document.getElementById('feedback');
+  const checkBtn = document.getElementById('check-btn');
+  const skipBtn = document.getElementById('skip-btn');
+
+  if (val === correct_ans) {
+    inp.className = 'answer-input correct-ans';
+    fb.className = 'feedback show-correct';
+    fb.innerHTML = L.feedbackCorrect;
+    correctCount++;
+  } else {
+    inp.className = 'answer-input wrong-ans';
+    fb.className = 'feedback show-wrong';
+    fb.innerHTML = L.feedbackWrong(q.answer);
+    wrongCount++;
+    mistakes.push({ verb: q.verb, tense: q.tense, person: q.person, yours: inp.value.trim(), correct: q.answer });
+  }
+
+  checkBtn.textContent = qIndex + 1 >= questions.length ? L.seeResults : L.nextBtn;
+  checkBtn.classList.add('next-mode');
+  skipBtn.disabled = true;
+}
+
+function skipQ() {
+  if (answered) return;
+  const q = questions[qIndex];
+  wrongCount++;
+  mistakes.push({ verb: q.verb, tense: q.tense, person: q.person, yours: '—', correct: q.answer });
+  qIndex++;
+  showQuestion();
+}
+
+function handleKey(e) {
+  if (e.key !== 'Enter') return;
+  const quizActive = document.getElementById('screen-quiz').classList.contains('active');
+  if (!quizActive) return;
+  e.preventDefault();
+  if (answered) { qIndex++; showQuestion(); }
+  else {
+    const val = document.getElementById('answer-input').value.trim();
+    if (val) checkOrNext();
+  }
+}
+document.addEventListener('keydown', handleKey);
+
+function showResults() {
+  const total = correctCount + wrongCount;
+  const pct = total ? Math.round(correctCount / total * 100) : 0;
+  const L = I18N[lang];
+
+  document.getElementById('score-num').textContent = pct + '%';
+  document.getElementById('res-correct').textContent = correctCount;
+  document.getElementById('res-wrong').textContent = wrongCount;
+  document.getElementById('res-total').textContent = total;
+
+  const ring = document.getElementById('score-ring');
+  ring.className = 'score-ring ' + (pct >= 80 ? 'great' : pct >= 50 ? 'ok' : 'poor');
+
+  const prev = parseInt(localStorage.getItem('dutch_best') || '0');
+  const badge = document.getElementById('best-badge');
+  if (pct > prev) {
+    localStorage.setItem('dutch_best', pct);
+    badge.innerHTML = L.newBest(prev);
+  } else {
+    badge.innerHTML = L.bestScore(prev);
+  }
+
+  const mistakesCard = document.getElementById('mistakes-card');
+  if (mistakes.length) {
+    mistakesCard.style.display = 'block';
+    document.getElementById('mistakes-list').innerHTML = mistakes.map(m => {
+      const ctx = m.person ? `${m.person} · ${L.tenseShort[m.tense]}` : L.tenseShort[m.tense];
+      return `<div class="mistake-row">
+        <div class="m-left">
+          <span class="m-verb">${m.verb}</span>
+          <span class="m-ctx">${ctx}</span>
+        </div>
+        <div class="m-right-side">
+          <span class="m-wrong-ans">${m.yours}</span>
+          <span class="m-arrow">→</span>
+          <span class="m-correct-ans">${m.correct}</span>
+        </div>
+      </div>`;
+    }).join('');
+  } else {
+    mistakesCard.style.display = 'none';
+  }
+
+  applyTranslations();
+  showScreen('screen-results');
+}
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+}
+
+function goSetup() {
+  showScreen('screen-setup');
+  renderVerbGrid();
+}
+
+applyTranslations();
+renderVerbGrid();
+selectAll();
+</script>
+</body>
+</html>
