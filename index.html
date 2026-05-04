@@ -313,56 +313,54 @@ body {
   color: var(--bg);
 }
 
-/* ── BIG VERB + PRONOUN TAG ── */
+/* ── QUIZ CENTER ── */
 .quiz-center {
-  text-align: center;
-  padding: 12px 0 20px;
+  padding: 16px 0 20px;
 }
 .verb-big {
-  font-size: 42px;
+  font-size: 38px;
   font-weight: 600;
   color: var(--text);
   line-height: 1.1;
-  margin-bottom: 14px;
+  margin-bottom: 20px;
   font-family: 'Sora', sans-serif;
   letter-spacing: -0.01em;
+  text-align: center;
 }
 .verb-big.perfect-mode {
-  font-size: 30px;
+  font-size: 28px;
+  margin-bottom: 20px;
 }
-.pronoun-tag-wrap {
+
+/* pronoun left of input on same row */
+.input-row {
   display: flex;
   align-items: center;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: 4px;
-}
-.pronoun-label-small {
-  font-size: 12px;
-  font-weight: 500;
-  color: var(--text3);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
+  gap: 10px;
 }
 .pronoun-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 0;
+  flex-shrink: 0;
   background: var(--accent);
   color: #fff;
-  border-radius: 8px;
-  padding: 4px 14px;
-  font-size: 17px;
+  border-radius: var(--radius);
+  padding: 0 16px;
+  font-size: 18px;
   font-weight: 600;
   font-family: 'DM Mono', monospace;
   letter-spacing: 0.02em;
+  white-space: nowrap;
+  /* match input height exactly */
+  height: 52px;
+  display: flex;
+  align-items: center;
 }
+.pronoun-tag.hidden { display: none; }
 
 /* ── ANSWER INPUT ── */
-.answer-wrap { margin-top: 20px; }
 .answer-input {
-  width: 100%;
-  padding: 14px 18px;
+  flex: 1;
+  min-width: 0;
+  padding: 14px 16px;
   font-size: 20px;
   font-family: 'DM Mono', monospace;
   font-weight: 500;
@@ -372,7 +370,8 @@ body {
   color: var(--text);
   outline: none;
   transition: border-color 0.15s, box-shadow 0.15s;
-  text-align: center;
+  text-align: left;
+  height: 52px;
 }
 .answer-input:focus {
   border-color: var(--accent);
@@ -591,10 +590,10 @@ body {
 @media (max-width: 480px) {
   .app { padding: 16px 12px 60px; }
   .verb-grid { grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); max-height: 180px; }
-  .verb-big { font-size: 32px; }
-  .verb-big.perfect-mode { font-size: 24px; }
-  .pronoun-tag { font-size: 15px; padding: 3px 12px; }
-  .answer-input { font-size: 18px; padding: 12px 14px; }
+  .verb-big { font-size: 28px; }
+  .verb-big.perfect-mode { font-size: 22px; }
+  .pronoun-tag { font-size: 15px; padding: 0 12px; height: 46px; }
+  .answer-input { font-size: 17px; height: 46px; padding: 10px 12px; }
   .stats-grid { gap: 8px; }
   .stat-num-big { font-size: 22px; }
   .mode-btn { min-width: 80px; font-size: 12px; padding: 8px 8px; }
@@ -608,8 +607,8 @@ body {
 <div class="app">
   <header class="site-header">
     <div class="lang-switcher">
-      <button class="lang-btn active" onclick="setLang('en',this)">EN</button>
-      <button class="lang-btn" onclick="setLang('nl',this)">NL</button>
+      <button class="lang-btn" onclick="setLang('en',this)">EN</button>
+      <button class="lang-btn active" onclick="setLang('nl',this)">NL</button>
     </div>
     <div class="site-title">Dutch Verb Trainer</div>
   </header>
@@ -670,24 +669,20 @@ body {
       </div>
 
       <div class="quiz-center" id="quiz-center">
-        <div class="pronoun-tag-wrap" id="pronoun-tag-wrap">
-          <span class="pronoun-label-small" id="pronoun-label-small">voor</span>
-          <span class="pronoun-tag" id="pronoun-tag">ik</span>
-        </div>
         <div class="verb-big" id="q-verb">—</div>
-      </div>
-
-      <div class="answer-wrap">
-        <input
-          class="answer-input"
-          id="answer-input"
-          type="text"
-          placeholder="type answer…"
-          autocomplete="off"
-          autocorrect="off"
-          autocapitalize="off"
-          spellcheck="false"
-        >
+        <div class="input-row">
+          <span class="pronoun-tag" id="pronoun-tag">ik</span>
+          <input
+            class="answer-input"
+            id="answer-input"
+            type="text"
+            placeholder="…"
+            autocomplete="off"
+            autocorrect="off"
+            autocapitalize="off"
+            spellcheck="false"
+          >
+        </div>
         <div class="feedback" id="feedback"></div>
       </div>
 
@@ -911,7 +906,7 @@ const I18N = {
     tenseBadge: { present: 'Present simple', past: 'Past simple', perfect: 'Past participle' },
     pronounLabel: 'for', particpleLabel: 'participle of',
     placeholderPerfect: 'past participle…',
-    placeholderPerson: (p) => `${p}…`,
+    placeholderPerson: (p) => `…`,
     feedbackCorrect: '✓ Correct!',
     feedbackWrong: (ans) => `✗ The answer is <span class="correct-word">${ans}</span>`,
     nextBtn: 'Next →', seeResults: 'See results →',
@@ -932,7 +927,7 @@ const I18N = {
     tenseBadge: { present: 'Tegenwoordige tijd', past: 'Verleden tijd', perfect: 'Voltooid deelwoord' },
     pronounLabel: 'voor', particpleLabel: 'deelwoord van',
     placeholderPerfect: 'voltooid deelwoord…',
-    placeholderPerson: (p) => `${p}…`,
+    placeholderPerson: (p) => `…`,
     feedbackCorrect: '✓ Goed zo!',
     feedbackWrong: (ans) => `✗ Het antwoord is <span class="correct-word">${ans}</span>`,
     nextBtn: 'Volgende →', seeResults: 'Resultaten →',
@@ -942,7 +937,7 @@ const I18N = {
   }
 };
 
-let lang = 'en';
+let lang = 'nl';
 
 function t(key) { return I18N[lang][key]; }
 
@@ -972,7 +967,8 @@ function updateStartBtn() {
 
 function buildQuestions() {
   const pool = getAllVerbs();
-  const persons = ['ik','jij','hij','wij','jullie','zij'];
+  // 'hij/zij' = singular he/she (same conjugation), 'zij' = plural they
+  const persons = ['ik','jij','hij/zij','wij','jullie','zij'];
   const tenses = tenseMode === 'all' ? ['present','past','perfect'] : [tenseMode];
   let qs = [];
   [...selectedVerbs].forEach(v => {
@@ -982,7 +978,8 @@ function buildQuestions() {
         qs.push({ verb: v, tense: 'perfect', person: null, answer: data.perfect });
       } else {
         persons.forEach(p => {
-          qs.push({ verb: v, tense: t, person: p, answer: data[t][p] });
+          const dataKey = p === 'hij/zij' ? 'hij' : p;
+          qs.push({ verb: v, tense: t, person: p, answer: data[t][dataKey] });
         });
       }
     });
@@ -1016,22 +1013,17 @@ function showQuestion() {
   document.getElementById('tense-badge').textContent = L.tenseBadge[q.tense];
 
   const verbEl = document.getElementById('q-verb');
-  const pronounWrap = document.getElementById('pronoun-tag-wrap');
   const pronounTag = document.getElementById('pronoun-tag');
-  const pronounLabel = document.getElementById('pronoun-label-small');
 
   if (q.tense === 'perfect') {
     verbEl.textContent = q.verb;
     verbEl.className = 'verb-big perfect-mode';
-    pronounTag.textContent = L.particpleLabel;
-    pronounLabel.textContent = '';
-    pronounWrap.style.display = 'none';
+    pronounTag.className = 'pronoun-tag hidden';
   } else {
     verbEl.textContent = q.verb;
     verbEl.className = 'verb-big';
-    pronounLabel.textContent = L.pronounLabel;
     pronounTag.textContent = q.person;
-    pronounWrap.style.display = 'flex';
+    pronounTag.className = 'pronoun-tag';
   }
 
   const inp = document.getElementById('answer-input');
